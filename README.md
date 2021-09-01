@@ -2,6 +2,8 @@
 
 A Terraform provider to source credentials from your [pass](https://passwordstore.org/) store.
 
+Not intended for wider consumption, hence not published to the Terraform registry.
+
 ```tf
 terraform {
   required_providers {

@@ -7,6 +7,13 @@ if [ -d "release/${RELEASE}" ]; then
     exit 1
 fi
 
+if ! git diff --exit-code main > /dev/null; then
+    echo -e "\033[31mOut of sync with main, please clean up\033[0m"
+    exit 1
+fi
+
+git tag -m "Craft release v${RELEASE}" "v${RELEASE}" main
+
 echo "--- Building provider"
 # Just care about building for my MBP for now
 export GOOS="darwin"
