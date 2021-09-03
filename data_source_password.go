@@ -45,7 +45,12 @@ func dataSourcePasswordRead(ctx context.Context, d *schema.ResourceData, m inter
 		return diag.FromErr(err)
 	}
 
-	if err := d.Set("password", strings.TrimSuffix(stdout.String(), "\n")); err != nil {
+	password := stdout.String()
+	// Strip trailing newline from one-line passwords
+	if strings.Count(password, "\n") == 1 {
+		password = strings.TrimSuffix(stdout.String(), "\n")
+	}
+	if err := d.Set("password", password); err != nil {
 		return diag.FromErr(err)
 	}
 	d.SetId(name)
