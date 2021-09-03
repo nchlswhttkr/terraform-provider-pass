@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"os/exec"
 	"strings"
 
@@ -34,8 +35,12 @@ func dataSourcePasswordRead(ctx context.Context, d *schema.ResourceData, m inter
 	var diags diag.Diagnostics
 
 	name := d.Get("name").(string)
+	store := m.(ProviderConfiguration).store
 
 	cmd := exec.Command("pass", "show", name)
+	if store != "" {
+		cmd.Env = append(cmd.Env, fmt.Sprintf("PASSWORD_STORE_DIR=%s", store))
+	}
 	var stdout bytes.Buffer
 	cmd.Stdout = &stdout
 	var stderr bytes.Buffer
