@@ -26,11 +26,12 @@ go build -o "terraform-provider-pass_v${RELEASE}"
 echo "--- Crafting release v${RELEASE}"
 mkdir -p "release/${RELEASE}/"
 zip "release/${RELEASE}/terraform-provider-pass_${RELEASE}_${GOOS}_${GOARCH}.zip" "terraform-provider-pass_v${RELEASE}"
-cd "release/${RELEASE}"
 
 echo "--- Generate signed checksums"
+cd "release/${RELEASE}"
 shasum --algorithm 256 -- *.zip > "terraform-provider-pass_${RELEASE}_SHA256SUMS"
 gpg --detach-sign "terraform-provider-pass_${RELEASE}_SHA256SUMS"
+cd ../..
 
 echo "--- Creating a draft release"
 GITHUB_ACCESS_TOKEN=$(pass show terraform-provider-pass/github-access-token)
