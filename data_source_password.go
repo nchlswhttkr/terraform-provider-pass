@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"log"
+	"os"
 	"os/exec"
 	"strings"
 
@@ -41,12 +43,19 @@ func dataSourcePasswordRead(ctx context.Context, d *schema.ResourceData, m inter
 	if store != "" {
 		cmd.Env = append(cmd.Env, fmt.Sprintf("PASSWORD_STORE_DIR=%s", store))
 	}
+	tty, set := os.LookupEnv("GPG_TTY")
+	if set {
+		cmd.Env = append(cmd.Env, fmt.Sprintf("GPG_TTY=%s", tty))
+	}
 	var stdout bytes.Buffer
 	cmd.Stdout = &stdout
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
 	err := cmd.Run()
 	if err != nil {
+		for _, line := range strings.Split(stderr.String(), "\n") {
+			log.Printf("[ERROR] %s\n", line)
+		}
 		return diag.FromErr(err)
 	}
 
