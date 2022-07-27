@@ -14,17 +14,17 @@ import (
 
 func dataSourcePassword() *schema.Resource {
 	return &schema.Resource{
-		Description: "A password stored within your password vault",
+		Description: "A password stored within your password vault.",
 		ReadContext: dataSourcePasswordRead,
 		Schema: map[string]*schema.Schema{
 			"password": {
-				Description: "The decrypted password's value",
+				Description: "The decrypted password's value.",
 				Type:        schema.TypeString,
 				Computed:    true,
 				Sensitive:   true,
 			},
 			"name": {
-				Description: "The name of the password to decrypt",
+				Description: "The name of the password to decrypt.",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
