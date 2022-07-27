@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"log"
 	"os"
 	"os/exec"
 	"strings"
@@ -51,12 +50,10 @@ func dataSourcePasswordRead(ctx context.Context, d *schema.ResourceData, m inter
 	cmd.Stdout = &stdout
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
-	err := cmd.Run()
-	if err != nil {
-		for _, line := range strings.Split(stderr.String(), "\n") {
-			log.Printf("[ERROR] %s\n", line)
-		}
-		return diag.FromErr(err)
+	if err := cmd.Run(); err != nil {
+		diags = diag.FromErr(err)
+		diags[0].Detail = stderr.String()
+		return diags
 	}
 
 	password := stdout.String()
