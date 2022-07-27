@@ -3,8 +3,8 @@ build:
 	@go build
 
 .PHONY: release
-release-%:
-	@RELEASE=$* ./build-release.sh
+release:
+	@./scripts/publish-release.sh
 
 goos = $(shell go env GOOS)
 goarch = $(shell go env GOARCH)

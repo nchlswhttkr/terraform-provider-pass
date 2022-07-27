@@ -1,19 +1,31 @@
 #!/bin/bash
 
+# Builds, tags, and pushes a new release to GitHub
+
 set -euo pipefail
 
-if grep --fixed-strings "v${RELEASE}" <(git tag --list) > /dev/null; then
-    echo -e "\033[31mExisting tag v${RELEASE} found, exiting...\033[0m"
+PREVIOUS_RELEASE_TAG="$(git describe --abbrev=0)"
+read -rp "Enter release version (previously ${PREVIOUS_RELEASE_TAG}) > v" RELEASE;
+
+# Ensure version number is valid and does not already exist
+if ! [[ "${RELEASE}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    echo -e "\033[31mRelease version number does not satisfy pattern\033[0m"
+    exit 1
+fi
+if grep --fixed-strings --line-regexp "v${RELEASE}" <(git tag --list) > /dev/null; then
+    echo -e "\033[31mA release with this version number already exists\033[0m"
     exit 1
 fi
 
-echo "--- Creating tag for release on GitHub"
-if ! git diff --exit-code main > /dev/null; then
-    echo -e "\033[31mOut of sync with main, please clean up\033[0m"
-    exit 1
-fi
-git checkout main
-git tag -m "Craft release v${RELEASE}" "v${RELEASE}"
+echo "--- Creating tag for release"
+TAG_MESSAGE=$(mktemp)
+git log --format="%s" "${PREVIOUS_RELEASE_TAG}..main" \
+    | sed "s/^/* /" \
+    | cat <(echo "Craft release v${RELEASE}") <(echo "") - > "${TAG_MESSAGE}"
+git tag --file="${TAG_MESSAGE}" --edit "v${RELEASE}" "main"
+git stash push --include-untracked --quiet --message "Stashing before release v${RELEASE}"
+git checkout --quiet "v${RELEASE}"
+git clean -d --force --quiet
 git push origin main
 git push --tags
 
