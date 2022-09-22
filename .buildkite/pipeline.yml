@@ -13,7 +13,7 @@ steps:
   - group: ":golang: Build binaries"
     steps:
       - label: ":golang: Build {{matrix.os}} {{matrix.arch}} binary"
-        command: go build
+        command: make build
         env:
           - GOOS={{matrix.os}}
           - GOARCH={{matrix.arch}}
@@ -34,3 +34,8 @@ steps:
             arch:
               - amd64
               - arm64
+
+  - label: "terraform: Generate plugin documentation"
+    command: make docs
+    artifact_paths:
+      - docs/*
