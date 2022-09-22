@@ -1,10 +1,33 @@
 steps:
-  - label: ":golang: Build"
-    command: go build
+  - label: ":golang: Check code formatting"
+    command:
+      - gofmt -l .
+      - test -z $(gofmt -l .)
     plugins:
       - docker-compose#v3.10.0:
           run: ci
           config: .buildkite/docker-compose.yml
-          env:
-            - GOOS=linux
-            - GOARCH=amd64
+
+  - wait
+
+  - group: ":golang: Build binaries"
+    steps:
+      - label: ":golang: Build {{matrix.os}} {{matrix.arch}} binary"
+        command: go build
+        artifact_paths:
+          - terraform-provider-pass
+        plugins:
+          - docker-compose#v3.10.0:
+              run: ci
+              config: .buildkite/docker-compose.yml
+              env:
+                - GOOS={{matrix.os}}
+                - GOARCH={{matrix.arch}}
+        matrix:
+          setup:
+            os:
+              - darwin
+              - linux
+            arch:
+              - amd64
+              - arm64
