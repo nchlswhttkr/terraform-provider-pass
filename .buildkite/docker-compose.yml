@@ -1,7 +1,11 @@
 version: "3"
 services:
   ci:
-    image: golang:1.18.4
-    working_dir: /workdir
+    working_dir: /terraform-provider-pass
     volumes:
-      - ..:/workdir
+      - ..:/terraform-provider-pass
+    build:
+      context: .
+      args:
+        GOLANG_VERSION: "1.18.4"
+        TFPLUGINDOCS_VERSION: "0.13.0"

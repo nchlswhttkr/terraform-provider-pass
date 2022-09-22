@@ -38,7 +38,7 @@ steps:
   - label: ":terraform: Generate plugin documentation"
     command: make docs
     artifact_paths:
-      - docs/*
+      - docs/**/*
     plugins:
       - docker-compose#v3.10.0:
           run: ci
