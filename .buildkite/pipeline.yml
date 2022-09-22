@@ -35,7 +35,11 @@ steps:
               - amd64
               - arm64
 
-  - label: "terraform: Generate plugin documentation"
+  - label: ":terraform: Generate plugin documentation"
     command: make docs
     artifact_paths:
       - docs/*
+    plugins:
+      - docker-compose#v3.10.0:
+          run: ci
+          config: .buildkite/docker-compose.yml
