@@ -14,6 +14,9 @@ steps:
     steps:
       - label: ":golang: Build {{matrix.os}} {{matrix.arch}} binary"
         command: go build
+        env:
+          - GOOS={{matrix.os}}
+          - GOARCH={{matrix.arch}}
         artifact_paths:
           - terraform-provider-pass
         plugins:
@@ -21,8 +24,8 @@ steps:
               run: ci
               config: .buildkite/docker-compose.yml
               env:
-                - GOOS={{matrix.os}}
-                - GOARCH={{matrix.arch}}
+                - GOOS
+                - GOARCH
         matrix:
           setup:
             os:
