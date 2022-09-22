@@ -6,6 +6,3 @@ services:
       - ..:/terraform-provider-pass
     build:
       context: .
-      args:
-        GOLANG_VERSION: "1.18.4"
-        TFPLUGINDOCS_VERSION: "0.13.0"
