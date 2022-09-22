@@ -1,0 +1,8 @@
+version: "3"
+services:
+  ci:
+    working_dir: /terraform-provider-pass
+    volumes:
+      - ..:/terraform-provider-pass
+    build:
+      context: .
