@@ -1,0 +1,7 @@
+version: "3"
+services:
+  ci:
+    image: golang:1.18.4
+    working_dir: /workdir
+    volumes:
+      - ..:/workdir

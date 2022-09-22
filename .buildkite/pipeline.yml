@@ -1,0 +1,7 @@
+steps:
+  - label: ":golang: Test"
+    command: go build
+    plugins:
+      - docker-compose#v3.10.0:
+          run: ci
+          config: .buildkite/docker-compose.yml
