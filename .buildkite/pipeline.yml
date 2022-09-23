@@ -17,8 +17,8 @@ steps:
           - make build
           - mv terraform-provider-pass terraform-provider-pass_{{matrix.os}}_{{matrix.arch}}
         env:
-          - GOOS={{matrix.os}}
-          - GOARCH={{matrix.arch}}
+          GOOS: "{{matrix.os}}"
+          GOARCH: "{{matrix.arch}}"
         artifact_paths:
           - terraform-provider-pass*
         plugins:
