@@ -62,8 +62,9 @@ ARTIFACTS_RESPONSE=$(mktemp)
 curl --silent --fail --show-error "https://api.buildkite.com/v2/organizations/nchlswhttkr/pipelines/terraform-provider-pass/builds/${BUILDKITE_BUILD_NUMBER}/artifacts" -H "Authorization: Bearer ${BUILDKITE_API_TOKEN}" > "${ARTIFACTS_RESPONSE}"
 for os in darwin linux; do
     for arch in amd64 arm64; do
-        DOWNLOAD_URL=$(jq --raw-output ".[] | select(.path == \"terraform-provider-pass_${os}_${arch}\") | .download_url" "${ARTIFACTS_RESPONSE}")
-        curl --silent --fail --show-error "${DOWNLOAD_URL}" -H "Authorization: Bearer ${BUILDKITE_API_TOKEN}" > "terraform-provider-pass_v${RELEASE}"
+        DOWNLOAD_API_URL=$(jq --raw-output ".[] | select(.path == \"terraform-provider-pass_${os}_${arch}\") | .download_url" "${ARTIFACTS_RESPONSE}")
+        DOWNLOAD_URL=$(curl --silent --fail --show-error "${DOWNLOAD_API_URL}" -H "Authorization: Bearer ${BUILDKITE_API_TOKEN}" | jq --raw-output ".url")
+        curl --silent --fail --show-error "${DOWNLOAD_URL}" > "terraform-provider-pass_v${RELEASE}"
         chmod +x "terraform-provider-pass_v${RELEASE}"
         zip "release/${RELEASE}/terraform-provider-pass_${RELEASE}_${os}_${arch}.zip" "terraform-provider-pass_v${RELEASE}"
     done
