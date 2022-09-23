@@ -64,6 +64,7 @@ for os in darwin linux; do
     for arch in amd64 arm64; do
         DOWNLOAD_URL=$(jq --raw-output ".[] | select(.path == \"terraform-provider-pass_${os}_${arch}\") | .download_url" "${ARTIFACTS_RESPONSE}")
         curl --silent --fail --show-error "${DOWNLOAD_URL}" -H "Authorization: Bearer ${BUILDKITE_API_TOKEN}" > "terraform-provider-pass_v${RELEASE}"
+        chmod +x "terraform-provider-pass_v${RELEASE}"
         zip "release/${RELEASE}/terraform-provider-pass_${RELEASE}_${os}_${arch}.zip" "terraform-provider-pass_v${RELEASE}"
     done
 done
