@@ -11,6 +11,7 @@ steps:
   - wait
 
   - group: ":golang: Build binaries"
+    key: build
     steps:
       - label: ":golang: Build {{matrix.os}} {{matrix.arch}} binary"
         command:
@@ -46,9 +47,8 @@ steps:
           run: ci
           config: .buildkite/docker-compose.yml
 
-  - wait
-
-  - label: ":pacakge: Bundle binary artifacts for release"
+  - label: ":package: Bundle binary artifacts for release"
+    depends_on: build
     command: .buildkite/bundle-artifacts-for-release.sh
     if: build.env("BUILDKITE_TAG") =~ /^v\d/
     artifact_paths:
@@ -57,3 +57,4 @@ steps:
       - docker-compose#v3.10.0:
           run: ci
           config: .buildkite/docker-compose.yml
+          mount_buildkite_agent: true
