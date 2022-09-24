@@ -58,3 +58,5 @@ steps:
           run: ci
           config: .buildkite/docker-compose.yml
           mount_buildkite_agent: true
+          env:
+            - BUILDKITE_TAG
