@@ -45,3 +45,15 @@ steps:
       - docker-compose#v3.10.0:
           run: ci
           config: .buildkite/docker-compose.yml
+
+  - wait
+
+  - label: ":pacakge: Bundle binary artifacts for release"
+    command: .buildkite/bundle-artifacts-for-release.sh
+    if: build.env(BUILDKITE_TAG) =~ /^v\d/
+    artifact_paths:
+      - release.zip
+    plugins:
+      - docker-compose#v3.10.0:
+          run: ci
+          config: .buildkite/docker-compose.yml
