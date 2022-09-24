@@ -3,7 +3,6 @@
 set -euo pipefail
 
 buildkite-agent artifact download "terraform-provider-pass*" .
-ls -l # TODO: Remove this debugging
 
 RELEASE=${BUILDKITE_TAG#v}
 
