@@ -1,7 +1,3 @@
-env:
-  # https://buildkite.com/docs/agent/v3/configuration#git-fetch-flags
-  BUILDKITE_GIT_FETCH_FLAGS: -v --prune --tags
-
 steps:
   - label: ":golang: Check code formatting"
     command:
