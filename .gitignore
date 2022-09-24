@@ -1,4 +1,8 @@
+# Artifacts from builds/releases
 terraform-provider-pass*
 release/
+release.zip
+
+# Documentation
 docs/
 tfplugindocs
