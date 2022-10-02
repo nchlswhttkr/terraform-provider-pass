@@ -14,8 +14,9 @@ import (
 
 func dataSourcePassword() *schema.Resource {
 	return &schema.Resource{
-		Description: "A password stored within your password vault.",
-		ReadContext: dataSourcePasswordRead,
+		Description:   "A password stored within your password vault.",
+		ReadContext:   dataSourcePasswordRead,
+		SchemaVersion: 1,
 		Schema: map[string]*schema.Schema{
 			"password": {
 				Description: "The decrypted password's value.",
@@ -50,6 +51,7 @@ func dataSourcePasswordRead(ctx context.Context, d *schema.ResourceData, m inter
 	cmd.Stdout = &stdout
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
+
 	if err := cmd.Run(); err != nil {
 		diags = diag.FromErr(err)
 		diags[0].Detail = stderr.String()

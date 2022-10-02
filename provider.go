@@ -12,6 +12,9 @@ func Provider() *schema.Provider {
 		DataSourcesMap: map[string]*schema.Resource{
 			"pass_password": dataSourcePassword(),
 		},
+		ResourcesMap: map[string]*schema.Resource{
+			"pass_password": resourcePassword(),
+		},
 		Schema: map[string]*schema.Schema{
 			"store": {
 				Description: "The absolute path of the password store to use, if not the default",
