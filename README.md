@@ -21,6 +21,7 @@ provider "pass" {
   store = "/path/to/.password-store"
 }
 
+
 # Read credentials from your password store
 data "pass_password" "read_password" {
   name = "read-password"
@@ -30,6 +31,7 @@ resource "local_sensitive_file" "hello_world" {
   content  = data.pass_password.read_password.password
   filename = "hello.txt"
 }
+
 
 # Store credentials from other sources to your password store
 resource "pass_password" "store_password" {

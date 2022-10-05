@@ -9,7 +9,7 @@ import (
 
 func dataSourcePassword() *schema.Resource {
 	return &schema.Resource{
-		Description:   "A password stored within your password vault.",
+		Description:   "Reads a password from your password store.",
 		ReadContext:   dataSourcePasswordRead,
 		SchemaVersion: 1,
 		Schema: map[string]*schema.Schema{

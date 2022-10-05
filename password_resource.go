@@ -9,7 +9,7 @@ import (
 
 func resourcePassword() *schema.Resource {
 	return &schema.Resource{
-		Description:   "A password stored within your password vault.",
+		Description:   "Stores the provided secret in your password store.",
 		CreateContext: resourcePasswordCreate,
 		ReadContext:   resourcePasswordRead,
 		UpdateContext: resourcePasswordUpdate,
@@ -17,13 +17,13 @@ func resourcePassword() *schema.Resource {
 		SchemaVersion: 1,
 		Schema: map[string]*schema.Schema{
 			"password": {
-				Description: "The decrypted password's value.",
+				Description: "The secret value to encrypt and store.",
 				Type:        schema.TypeString,
 				Required:    true,
 				Sensitive:   true,
 			},
 			"name": {
-				Description: "The name of the password to decrypt.",
+				Description: "The name of the password to add to your password store.",
 				Type:        schema.TypeString,
 				Required:    true,
 				ForceNew:    true,
