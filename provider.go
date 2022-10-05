@@ -31,9 +31,9 @@ type ProviderConfiguration struct {
 }
 
 func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
-	var diags diag.Diagnostics
+	// TODO: Read TTY as part of configuration
 
 	return ProviderConfiguration{
 		store: d.Get("store").(string),
-	}, diags
+	}, nil
 }
