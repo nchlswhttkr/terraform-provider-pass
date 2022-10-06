@@ -23,4 +23,4 @@ docs: tfplugindocs
 
 .PHONY: clean
 clean:
-	@rm -f tfplugindocs
+	@git clean -d --force --quiet -X

@@ -1,12 +1,7 @@
 package main
 
 import (
-	"bytes"
 	"context"
-	"fmt"
-	"os"
-	"os/exec"
-	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -14,8 +9,9 @@ import (
 
 func dataSourcePassword() *schema.Resource {
 	return &schema.Resource{
-		Description: "A password stored within your password vault.",
-		ReadContext: dataSourcePasswordRead,
+		Description:   "Reads a password from your password store.",
+		ReadContext:   dataSourcePasswordRead,
+		SchemaVersion: 1,
 		Schema: map[string]*schema.Schema{
 			"password": {
 				Description: "The decrypted password's value.",
@@ -33,38 +29,20 @@ func dataSourcePassword() *schema.Resource {
 }
 
 func dataSourcePasswordRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	var diags diag.Diagnostics
-
 	name := d.Get("name").(string)
 	store := m.(ProviderConfiguration).store
 
-	cmd := exec.Command("pass", "show", name)
-	if store != "" {
-		cmd.Env = append(cmd.Env, fmt.Sprintf("PASSWORD_STORE_DIR=%s", store))
-	}
-	tty, set := os.LookupEnv("GPG_TTY")
-	if set {
-		cmd.Env = append(cmd.Env, fmt.Sprintf("GPG_TTY=%s", tty))
-	}
-	var stdout bytes.Buffer
-	cmd.Stdout = &stdout
-	var stderr bytes.Buffer
-	cmd.Stderr = &stderr
-	if err := cmd.Run(); err != nil {
-		diags = diag.FromErr(err)
-		diags[0].Detail = stderr.String()
+	client := NewPassClient(store)
+	password, diags := client.GetPassword(name)
+	if diags.HasError() {
 		return diags
 	}
 
-	password := stdout.String()
-	// Strip trailing newline from one-line passwords
-	if strings.Count(password, "\n") == 1 {
-		password = strings.TrimSuffix(stdout.String(), "\n")
-	}
 	if err := d.Set("password", password); err != nil {
-		return diag.FromErr(err)
+		diags = append(diags, diag.FromErr(err)...)
+		return diags
 	}
-	d.SetId(name)
 
+	d.SetId(name)
 	return diags
 }

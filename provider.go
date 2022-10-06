@@ -12,6 +12,9 @@ func Provider() *schema.Provider {
 		DataSourcesMap: map[string]*schema.Resource{
 			"pass_password": dataSourcePassword(),
 		},
+		ResourcesMap: map[string]*schema.Resource{
+			"pass_password": resourcePassword(),
+		},
 		Schema: map[string]*schema.Schema{
 			"store": {
 				Description: "The absolute path of the password store to use, if not the default",
@@ -28,9 +31,9 @@ type ProviderConfiguration struct {
 }
 
 func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
-	var diags diag.Diagnostics
+	// TODO: Read TTY as part of configuration
 
 	return ProviderConfiguration{
 		store: d.Get("store").(string),
-	}, diags
+	}, nil
 }
