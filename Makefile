@@ -6,7 +6,7 @@ build:
 
 .PHONY: release
 release:
-	@./scripts/publish-release.sh
+	@./scripts/publish-new-version.sh
 
 goos = $(shell go env GOOS)
 goarch = $(shell go env GOARCH)

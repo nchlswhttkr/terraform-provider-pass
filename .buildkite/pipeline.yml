@@ -50,7 +50,7 @@ steps:
   - label: ":github: Bundle binary artifacts and create GitHub release"
     key: release
     depends_on: build
-    command: .buildkite/bundle-artifacts-for-release.sh
+    command: .buildkite/create-release.sh
     if: build.env("BUILDKITE_TAG") =~ /^v\d/
     artifact_paths:
       - release.json

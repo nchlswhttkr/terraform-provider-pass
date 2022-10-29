@@ -39,8 +39,8 @@ curl --silent --fail --show-error -X POST "https://api.github.com/repos/nchlswht
             \"prerelease\": ${IS_PRELEASE},
             \"draft\": true
         }
-    " > "release/${RELEASE}.json"
-RELEASE_ID=$(jq --raw-output ".id" "release/${RELEASE}.json")
+    " > "release.json"
+RELEASE_ID=$(jq --raw-output ".id" "release.json")
 echo "Created draft release ${RELEASE_ID}"
 
 echo "--- Uploading release assets"
@@ -55,12 +55,12 @@ find "release/" -type f | while read -r ASSET; do
         --data-binary "@${ASSET}" > /dev/null
 done
 
-# echo "--- Making release public"
-# curl --silent --fail --show-error -X PATCH "https://api.github.com/repos/nchlswhttkr/terraform-provider-pass/releases/${RELEASE_ID}" \
-#     -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" \
-#     -H "Accept: application/vnd.github.v3+json" \
-#     --data "
-#         {
-#             \"draft\": false
-#         }
-#     "
+echo "--- Making release public"
+curl --silent --fail --show-error -X PATCH "https://api.github.com/repos/nchlswhttkr/terraform-provider-pass/releases/${RELEASE_ID}" \
+    -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" \
+    -H "Accept: application/vnd.github.v3+json" \
+    --data "
+        {
+            \"draft\": false
+        }
+    "
