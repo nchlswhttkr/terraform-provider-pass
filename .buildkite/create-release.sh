@@ -4,6 +4,10 @@ set -euo pipefail
 
 RELEASE=${BUILDKITE_TAG#v}
 
+GITHUB_ACCESS_TOKEN="$(vault kv get -mount=kv -field github_access_token buildkite/terraform-provider-pass)"
+GPG_SIGNING_KEY="$(vault kv get -mount=kv -field gpg_signing_key buildkite/terraform-provider-pass)"
+GPG_SIGNING_KEY_PASSPHRASE="$(vault kv get -mount=kv -field gpg_signing_key_passphrase buildkite/terraform-provider-pass)"
+
 echo "--- Downloading and zipping artifacts"
 buildkite-agent artifact download "terraform-provider-pass*" .
 mkdir -p release
