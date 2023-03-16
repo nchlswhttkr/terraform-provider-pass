@@ -4,6 +4,10 @@ set -euo pipefail
 
 RELEASE=${BUILDKITE_TAG#v}
 
+GITHUB_ACCESS_TOKEN="$(vault kv get -mount=kv -field github_access_token buildkite/terraform-provider-pass)"
+GPG_SIGNING_KEY="$(vault kv get -mount=kv -field gpg_signing_key buildkite/terraform-provider-pass)"
+GPG_SIGNING_KEY_PASSPHRASE="$(vault kv get -mount=kv -field gpg_signing_key_passphrase buildkite/terraform-provider-pass)"
+
 echo "--- Downloading and zipping artifacts"
 buildkite-agent artifact download "terraform-provider-pass*" .
 mkdir -p release
@@ -20,7 +24,7 @@ gpg --batch --import  <(echo "${GPG_SIGNING_KEY}")
 
 echo "--- Signing zipped artifacts"
 cd release
-shasum --algorithm 256 -- *.zip > "terraform-provider-pass_${RELEASE}_SHA256SUMS"
+sha256sum -- *.zip > "terraform-provider-pass_${RELEASE}_SHA256SUMS"
 gpg --pinentry-mode loopback --local-user "nicholas+terraform-provider-pass@nicholas.cloud" --passphrase "${GPG_SIGNING_KEY_PASSPHRASE}" --detach-sign "terraform-provider-pass_${RELEASE}_SHA256SUMS"
 cd ..
 

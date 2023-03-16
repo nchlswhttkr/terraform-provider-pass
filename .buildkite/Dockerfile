@@ -1,3 +1,3 @@
 FROM golang:1.20
 
-RUN apt-get update && apt-get install -y --no-install-recommends file jq unzip zip
+RUN apt-get update && apt-get install -y --no-install-recommends unzip
