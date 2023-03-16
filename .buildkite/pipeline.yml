@@ -52,15 +52,7 @@ steps:
     depends_on: build
     command: .buildkite/create-release.sh
     if: build.env("BUILDKITE_TAG") =~ /^v\d/
+    env:
+      VAULT_ROLE_ID: 703f9e62-1225-507b-ab21-9b762f8db482
     artifact_paths:
       - release.json
-    plugins:
-      - docker-compose#v3.10.0:
-          run: ci
-          config: .buildkite/docker-compose.yml
-          mount_buildkite_agent: true
-          env:
-            - BUILDKITE_TAG
-            - GITHUB_ACCESS_TOKEN
-            - GPG_SIGNING_KEY
-            - GPG_SIGNING_KEY_PASSPHRASE
