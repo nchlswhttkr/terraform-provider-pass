@@ -25,7 +25,7 @@ gpg --batch --import  <(echo "${GPG_SIGNING_KEY}")
 echo "--- Signing zipped artifacts"
 cd release
 sha256sum -- *.zip > "terraform-provider-pass_${RELEASE}_SHA256SUMS"
-gpg --pinentry-mode loopback --local-user "nicholas+terraform-provider-pass@nicholas.cloud" --passphrase "${GPG_SIGNING_KEY_PASSPHRASE}" --detach-sign "terraform-provider-pass_${RELEASE}_SHA256SUMS"
+gpg --batch --local-user "nicholas+terraform-provider-pass@nicholas.cloud" --passphrase "${GPG_SIGNING_KEY_PASSPHRASE}" --detach-sign "terraform-provider-pass_${RELEASE}_SHA256SUMS"
 cd ..
 
 echo "--- Create draft release on GitHub"
