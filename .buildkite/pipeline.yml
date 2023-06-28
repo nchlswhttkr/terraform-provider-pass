@@ -48,7 +48,7 @@ steps:
           config: .buildkite/docker-compose.yml
 
   - label: ":github: Bundle binary artifacts and create GitHub release"
-    key: release
+    key: create-release
     depends_on: build
     command: .buildkite/create-release.sh
     if: build.env("BUILDKITE_TAG") =~ /^v\d/
@@ -56,3 +56,11 @@ steps:
       VAULT_ROLE_ID: 703f9e62-1225-507b-ab21-9b762f8db482
     artifact_paths:
       - release.json
+
+  - label: ":github: Sign and publish release"
+    key: sign-release
+    depends_on: create-release
+    command: .buildkite/sign-release.sh
+    if: build.env("BUILDKITE_TAG") =~ /^v\d/
+    agents:
+      queue: nchlswhttkr

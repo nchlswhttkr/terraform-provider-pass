@@ -5,8 +5,6 @@ set -euo pipefail
 RELEASE=${BUILDKITE_TAG#v}
 
 GITHUB_ACCESS_TOKEN="$(vault kv get -mount=kv -field github_access_token buildkite/terraform-provider-pass)"
-GPG_SIGNING_KEY="$(vault kv get -mount=kv -field gpg_signing_key buildkite/terraform-provider-pass)"
-GPG_SIGNING_KEY_PASSPHRASE="$(vault kv get -mount=kv -field gpg_signing_key_passphrase buildkite/terraform-provider-pass)"
 
 echo "--- Downloading and zipping artifacts"
 buildkite-agent artifact download "terraform-provider-pass*" .
@@ -19,13 +17,10 @@ for os in darwin linux; do
     done
 done
 
-echo "--- Importing GPG signing key"
-gpg --batch --import  <(echo "${GPG_SIGNING_KEY}")
-
-echo "--- Signing zipped artifacts"
+echo "--- Generating checksum for zipped artifacts"
 cd release
 sha256sum -- *.zip > "terraform-provider-pass_${RELEASE}_SHA256SUMS"
-gpg --batch --local-user "nicholas+terraform-provider-pass@nicholas.cloud" --passphrase "${GPG_SIGNING_KEY_PASSPHRASE}" --detach-sign "terraform-provider-pass_${RELEASE}_SHA256SUMS"
+buildkite-agent artifact upload "terraform-provider-pass_${RELEASE}_SHA256SUMS"
 cd ..
 
 echo "--- Create draft release on GitHub"
@@ -45,9 +40,10 @@ curl --silent --fail --show-error -X POST "https://api.github.com/repos/nchlswht
         }
     " | tee "release.json"
 RELEASE_ID=$(jq --raw-output ".id" "release.json")
+buildkite-agent meta-data set "github-release-id" "${RELEASE_ID}"
 echo "Created draft release ${RELEASE_ID}"
 
-echo "--- Uploading release assets"
+echo "--- Uploading release artifacts"
 # GitHub supports Hypermedia relations, but this isn't easy to shell script
 # https://docs.github.com/en/rest/overview/resources-in-the-rest-api#hypermedia
 find "release/" -type f | while read -r ASSET; do
@@ -58,13 +54,3 @@ find "release/" -type f | while read -r ASSET; do
         -H "Content-Type: $(file --brief --mime-type "${ASSET}")" \
         --data-binary "@${ASSET}" > /dev/null
 done
-
-echo "--- Making release public"
-curl --silent --fail --show-error -X PATCH "https://api.github.com/repos/nchlswhttkr/terraform-provider-pass/releases/${RELEASE_ID}" \
-    -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" \
-    -H "Accept: application/vnd.github.v3+json" \
-    --data "
-        {
-            \"draft\": false
-        }
-    "
