@@ -7,7 +7,7 @@ RELEASE_ID="$(buildkite-agent meta-data get github-release-id)"
 
 VAULT_TOKEN="$(pass show vault/root-token)"
 export VAULT_TOKEN
-GITHUB_ACCESS_TOKEN="$(vault kv get -mount=kv -field github_access_token buildkite/terraform-provider-pass)"
+GITHUB_ACCESS_TOKEN="$(vault kv get -field github_access_token kv/buildkite/terraform-provider-pass)"
 
 echo "--- Signing release checksum"
 buildkite-agent artifact download "terraform-provider-pass_${RELEASE}_SHA256SUMS" .
