@@ -14,14 +14,11 @@ import (
 
 type PassClient struct {
 	store string
-	tty   string
 }
 
 func NewPassClient(store string) PassClient {
-	tty := os.Getenv("GPG_TTY")
 	return PassClient{
 		store,
-		tty,
 	}
 }
 
@@ -54,10 +51,7 @@ func (p PassClient) CreatePassword(name string, password string) diag.Diagnostic
 		cmd.Stdin = bytes.NewBufferString(fmt.Sprintf("%s\n%s\n", password, password))
 	}
 	if p.store != "" {
-		cmd.Env = append(cmd.Env, fmt.Sprintf("PASSWORD_STORE_DIR=%s", p.store))
-	}
-	if p.tty != "" {
-		cmd.Env = append(cmd.Env, fmt.Sprintf("GPG_TTY=%s", p.tty))
+		cmd.Env = append(os.Environ(), fmt.Sprintf("PASSWORD_STORE_DIR=%s", p.store))
 	}
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
@@ -73,7 +67,7 @@ func (p PassClient) CreatePassword(name string, password string) diag.Diagnostic
 func (p PassClient) DeletePassword(name string) diag.Diagnostics {
 	cmd := exec.Command("pass", "rm", "--force", name)
 	if p.store != "" {
-		cmd.Env = append(cmd.Env, fmt.Sprintf("PASSWORD_STORE_DIR=%s", p.store))
+		cmd.Env = append(os.Environ(), fmt.Sprintf("PASSWORD_STORE_DIR=%s", p.store))
 	}
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
@@ -89,10 +83,7 @@ func (p PassClient) DeletePassword(name string) diag.Diagnostics {
 func (p PassClient) GetPassword(name string) (string, diag.Diagnostics) {
 	cmd := exec.Command("pass", "show", name)
 	if p.store != "" {
-		cmd.Env = append(cmd.Env, fmt.Sprintf("PASSWORD_STORE_DIR=%s", p.store))
-	}
-	if p.tty != "" {
-		cmd.Env = append(cmd.Env, fmt.Sprintf("GPG_TTY=%s", p.tty))
+		cmd.Env = append(os.Environ(), fmt.Sprintf("PASSWORD_STORE_DIR=%s", p.store))
 	}
 	var stdout bytes.Buffer
 	cmd.Stdout = &stdout
@@ -125,10 +116,7 @@ func (p PassClient) OverwritePassword(name string, password string) diag.Diagnos
 		cmd.Stdin = bytes.NewBufferString(fmt.Sprintf("%s\n%s\n", password, password))
 	}
 	if p.store != "" {
-		cmd.Env = append(cmd.Env, fmt.Sprintf("PASSWORD_STORE_DIR=%s", p.store))
-	}
-	if p.tty != "" {
-		cmd.Env = append(cmd.Env, fmt.Sprintf("GPG_TTY=%s", p.tty))
+		cmd.Env = append(os.Environ(), fmt.Sprintf("PASSWORD_STORE_DIR=%s", p.store))
 	}
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
